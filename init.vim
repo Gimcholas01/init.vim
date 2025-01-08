@@ -4,6 +4,8 @@ set ts=4 sw=4
 set et
 set backspace=indent,eol,start
 syntax on
+set clipboard^=unnamed
+set clipboard=unnamedplus
 set ignorecase
 set smartcase
 set history=500
