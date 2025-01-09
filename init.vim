@@ -1,7 +1,9 @@
 set number
 set relativenumber
-set ts=4 sw=4
-set et
+set softtabstop=4
+set tabstop=4
+set shiftwidth=4
+set expandtab
 set backspace=indent,eol,start
 syntax on
 set clipboard^=unnamed
@@ -13,6 +15,9 @@ set undofile
 set undodir=$HOME/.vim/undo 
 set undolevels=1000
 set undoreload=10000
+
+" C-s to save
+nnoremap <C-s> <ESC>:w<CR>
 
 " window navigation remap
 nnoremap <S-h> <C-w>h
@@ -26,39 +31,68 @@ nnoremap <A-Down> :m .+1<CR>==
 vnoremap <A-Up> :m '<-2<CR>gv=gv
 vnoremap <A-Down> :m '>+1<CR>gv=gv
 
-" enter to new line / delete to remove line
-nnoremap <CR> ^i<CR><ESC>
-nnoremap <BS> ^i<BS><ESC>
-
 " tab in visual/normal mode
 vnoremap <Tab> >
 vnoremap <S-Tab> <
 nnoremap <Tab> >>^
 nnoremap <S-Tab> <<^
 
+" ctrl + f to find word
+nnoremap <C-f> /
+
 call plug#begin()
 
 Plug 'tpope/vim-surround' " Surrounding ysw)
 Plug 'tpope/vim-commentary' " For Commenting gcc & gc
+
 Plug 'preservim/nerdtree' ", {'on': 'NERDTreeToggle'}
-Plug 'junegunn/fzf.vim' " Fuzzy Finder, Needs Silversearcher-ag for :Ag
+
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+
 Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.8' }
-Plug 'neovim/nvim-lspconfig'
+Plug 'BurntSushi/ripgrep'
+Plug 'sharkdp/fd'
+
+Plug 'tpope/vim-fugitive'
+
+Plug 'lewis6991/gitsigns.nvim'
+
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-path'
 Plug 'hrsh7th/cmp-cmdline'
 Plug 'hrsh7th/nvim-cmp' " nvim-cmp
+Plug 'hrsh7th/cmp-vsnip'
+Plug 'neovim/nvim-lspconfig'
+
+Plug 'williamboman/mason.nvim'
+Plug 'williamboman/mason-lspconfig.nvim'
+Plug 'jose-elias-alvarez/null-ls.nvim'
+
+Plug 'hrsh7th/vim-vsnip'
+
 Plug 'nvim-tree/nvim-web-devicons' " Recommended (for coloured icons)
+
 Plug 'akinsho/bufferline.nvim', { 'tag': '*' } " buffer tabs
+
 Plug 'farmergreg/vim-lastplace' " vim last place
+
 Plug 'romainl/vim-cool/'
+
+Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
+
 call plug#end()
+
+colorscheme catppuccin
 
 " Nerd tree custom keybind
 nnoremap <C-t> :NERDTreeToggle<CR>
+let NERDTreeShowHidden=1
 
 " commenting custom keybind
 nnoremap <C-Space> :Commentary<CR>
@@ -79,10 +113,14 @@ nnoremap <f7> <cmd>BufferLineGoToBuffer7<cr>
 nnoremap <f8> <cmd>BufferLineGoToBuffer8<cr>
 nnoremap <f9> <cmd>BufferLineGoToBuffer9<cr>
 
+lua << EOF
+require("mason").setup()
+require("mason-lspconfig").setup()
+require("null-ls").setup()
+EOF
 
-" nvim-cmp setup
-lua <<EOF
-  -- Set up nvim-cmp.
+lua << EOF
+-- Set up nvim-cmp.
   local cmp = require'cmp'
 
   cmp.setup({
@@ -90,10 +128,6 @@ lua <<EOF
       -- REQUIRED - you must specify a snippet engine
       expand = function(args)
         vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
-        -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
-        -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
-        -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
-        -- vim.snippet.expand(args.body) -- For native neovim snippets (Neovim v0.10+)
       end,
     },
     window = {
@@ -149,14 +183,27 @@ lua <<EOF
   })
 
   -- Set up lspconfig.
-  
-  
-  --ocal capabilities = require('cmp_nvim_lsp').default_capabilities()
-  --- Replace <YOUR_LSP_SERVER> with each lsp server you've enabled.
-  --equire('lspconfig')['<YOUR_LSP_SERVER>'].setup {
-  -- capabilities = capabilities
-  --
-  
+    local capabilities = require('cmp_nvim_lsp').default_capabilities()
+  -- Replace <YOUR_LSP_SERVER> with each lsp server you've enabled.
+
+  -- LSP
+  require('lspconfig')['pyright'].setup {
+    capabilities = capabilities
+  }
+
+  require('lspconfig')['cssls'].setup { 
+    capabilities = capabilities
+  }
+
+  require('lspconfig')['djlsp'].setup {
+    capabilities = capabilities
+  }
+
+  require('lspconfig')['html'].setup { 
+    capabilities = capabilities
+  }
+
+    -- Snippets
 EOF
 
 
@@ -165,4 +212,8 @@ EOF
 set termguicolors
 lua << EOF
 require("bufferline").setup{}
+EOF
+
+lua << EOF
+  require('gitsigns').setup()
 EOF
