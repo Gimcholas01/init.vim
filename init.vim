@@ -1,3 +1,7 @@
+" you can use the command below to open vim using this init.vim setup without needing to download it
+" nvim -u <(curl -s https://raw.githubusercontent.com/Gimcholas01/init.vim/refs/heads/main/init.vim)
+" note: only for linux users (if youre using windows then youre out of luck :p)
+
 set number
 set relativenumber
 set softtabstop=4
@@ -39,6 +43,9 @@ nnoremap <S-Tab> <<^
 
 " ctrl + f to find word
 nnoremap <C-f> /
+
+" ctrl + w + h to split horizontally
+nnoremap <C-W>h :split<CR>
 
 call plug#begin()
 
