@@ -65,7 +65,7 @@ endfunction
 
 " plugin manager, stop here if Plug is not found
 if empty(globpath(&rtp, 'autoload/plug.vim'))
-    echo "Plug not found, download Plug for more features"
+    vim.cmd([[silent! r !echo -e "Link to Plug.\nUnix:\nsh -c 'curl -fLo \"\\${XDG_DATA_HOME:-\\$HOME/.local/share}\"/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'\nWindows(PowerShell):\niwr -useb https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim | ni \"\\$($env:XDG_DATA_HOME, \\$env:LOCALAPPDATA)[$null -eq \\$env:XDG_DATA_HOME]/nvim-data/site/autoload/plug.vim\" -Force"]])
     finish
 endif
 
