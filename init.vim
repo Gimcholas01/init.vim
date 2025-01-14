@@ -86,6 +86,7 @@ Plug 'vim-airline/vim-airline-themes'
 
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.8' }
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'BurntSushi/ripgrep'
 Plug 'sharkdp/fd'
 
@@ -128,7 +129,7 @@ let NERDTreeShowHidden=1
 " commenting custom keybind
 nnoremap <C-Space> :Commentary<CR>
 " fuzzy finder telescope
-nnoremap <leader>ff <cmd>Telescope find_files<cr>
+nnoremap <leader>ff <cmd>Telescope find_files hidden=true<cr>
 nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
