@@ -66,7 +66,7 @@ endfunction
 " plugin manager, stop here if Plug is not found
 if empty(globpath(&rtp, 'autoload/plug.vim'))
     echo "Plug not found, download Plug for more features"
-    exit
+    finish
 endif
 
 call plug#begin()
