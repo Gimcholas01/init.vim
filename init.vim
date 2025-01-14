@@ -1,6 +1,13 @@
-" you can use the command below to open vim using this init.vim setup without needing to download it
+" you can use the command below to open vim using this init.vim setup
+" Linux:
 " nvim -u <(curl -s https://raw.githubusercontent.com/Gimcholas01/init.vim/refs/heads/main/init.vim)
-" note: only for linux users (if youre using windows then youre out of luck :p)
+"
+" Windows:
+" curl -O https://raw.githubusercontent.com/Gimcholas01/init.vim/refs/heads/main/init.vim --output-dir %temp% && nvim -u %temp%/init.vim && del %temp%\init.vim
+"
+" Windows does not have the functionality to pass in curl output into vim,
+" hence the work around is to download the init.vim file to the %temp% folder
+" and delete it after exiting vim
 
 set number
 set relativenumber
@@ -10,7 +17,6 @@ set shiftwidth=4
 set expandtab
 set backspace=indent,eol,start
 syntax on
-set clipboard^=unnamed
 set clipboard=unnamedplus
 set ignorecase
 set smartcase
@@ -19,9 +25,12 @@ set undofile
 set undodir=$HOME/.vim/undo 
 set undolevels=1000
 set undoreload=10000
+set autoread
 
-" C-s to save
-nnoremap <C-s> <ESC>:w<CR>
+" delete change substitute without copy
+nnoremap d "_d
+nnoremap c "_c
+nnoremap s "_s
 
 " window navigation remap
 nnoremap <S-h> <C-w>h
@@ -41,11 +50,24 @@ vnoremap <S-Tab> <
 nnoremap <Tab> >>^
 nnoremap <S-Tab> <<^
 
-" ctrl + f to find word
-nnoremap <C-f> /
-
 " ctrl + w + h to split horizontally
 nnoremap <C-W>h :split<CR>
+
+" check for changes from different sessions
+if ! exists("g:CheckUpdateStarted")
+    let g:CheckUpdateStarted=1
+    call timer_start(1,'CheckUpdate')
+endif
+function! CheckUpdate(timer)
+    silent! checktime
+    call timer_start(3000,'CheckUpdate')
+endfunction
+
+" plugin manager, stop here if Plug is not found
+if empty(globpath(&rtp, 'autoload/plug.vim'))
+    echo "Plug not found, download Plug for more features"
+    exit
+endif
 
 call plug#begin()
 
@@ -145,8 +167,8 @@ lua << EOF
       ['<C-k>'] = cmp.mapping.select_prev_item(),
       ['<C-j>'] = cmp.mapping.select_next_item(),
       ['<C-Space>'] = cmp.mapping.complete(),
-      ['<C-e>'] = cmp.mapping.abort(),
-      ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+      ['<C-Space>'] = cmp.mapping.abort(),
+      ['<Tab>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
     }),
     sources = cmp.config.sources({
       { name = 'nvim_lsp' },
