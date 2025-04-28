@@ -29,14 +29,20 @@ set autoread
 
 " delete change substitute without copy
 nnoremap d "_d
+vnoremap d "_d
+nnoremap D "_D
+vnoremap D "_D
 nnoremap c "_c
-nnoremap s "_s
+vnoremap c "_c
+nnoremap C "_C
+vnoremap C "_C
+xnoremap p P
 
 " window navigation remap
-nnoremap <S-h> <C-w>h
-nnoremap <S-j> <C-w>j
-nnoremap <S-k> <C-w>k
-nnoremap <S-l> <C-w>l
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
 
 " alt + up down arrow keys to move blocks of code up or down
 nnoremap <A-Up> :m .-2<CR>==
@@ -52,6 +58,12 @@ nnoremap <S-Tab> <<^
 
 " ctrl + w + h to split horizontally
 nnoremap <C-W>h :split<CR>
+
+" paste on new line
+nnoremap P o<Esc>p
+
+" buffer delete, dont close window
+map <C-d> :bn<CR>:bd#<CR>
 
 " check for changes from different sessions
 if ! exists("g:CheckUpdateStarted")
@@ -101,10 +113,13 @@ Plug 'hrsh7th/cmp-cmdline'
 Plug 'hrsh7th/nvim-cmp' " nvim-cmp
 Plug 'hrsh7th/cmp-vsnip'
 Plug 'neovim/nvim-lspconfig'
+Plug 'rafamadriz/friendly-snippets'
 
 Plug 'williamboman/mason.nvim'
 Plug 'williamboman/mason-lspconfig.nvim'
 Plug 'jose-elias-alvarez/null-ls.nvim'
+
+Plug 'christoomey/vim-tmux-navigator'
 
 Plug 'hrsh7th/vim-vsnip'
 
@@ -117,6 +132,8 @@ Plug 'farmergreg/vim-lastplace' " vim last place
 Plug 'romainl/vim-cool/'
 
 Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
+
+Plug 'tribela/vim-transparent'
 
 call plug#end()
 
@@ -149,6 +166,7 @@ lua << EOF
 require("mason").setup()
 require("mason-lspconfig").setup()
 require("null-ls").setup()
+
 EOF
 
 lua << EOF
@@ -167,11 +185,10 @@ lua << EOF
       -- documentation = cmp.config.window.bordered(),
     },
     mapping = cmp.mapping.preset.insert({
-      ['<C-k>'] = cmp.mapping.select_prev_item(),
-      ['<C-j>'] = cmp.mapping.select_next_item(),
+      ['<C-p>'] = cmp.mapping.select_prev_item(),
+      ['<C-n>'] = cmp.mapping.select_next_item(),
       ['<C-Space>'] = cmp.mapping.complete(),
-      ['<C-Space>'] = cmp.mapping.abort(),
-      ['<Tab>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+      ['<C-y>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
     }),
     sources = cmp.config.sources({
       { name = 'nvim_lsp' },
@@ -184,16 +201,6 @@ lua << EOF
     })
   })
 
-  -- To use git you need to install the plugin petertriho/cmp-git and uncomment lines below
-  -- Set configuration for specific filetype.
-  --[[ cmp.setup.filetype('gitcommit', {
-    sources = cmp.config.sources({
-      { name = 'git' },
-    }, {
-      { name = 'buffer' },
-    })
- })
- require("cmp_git").setup() ]]-- 
 
   -- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
   cmp.setup.cmdline({ '/', '?' }, {
@@ -219,19 +226,30 @@ lua << EOF
   -- Replace <YOUR_LSP_SERVER> with each lsp server you've enabled.
 
   -- LSP
-  require('lspconfig')['pyright'].setup {
-    capabilities = capabilities
+  require('lspconfig')['djlsp'].setup {
+      capabilities = capabilities
   }
+
+    require('lspconfig').pyright.setup {
+        capabilities = capabilities,
+        settings = {
+            python = {
+                analysis = {
+                    typeCheckingMode = "off"  -- Disable type checking
+                }
+            }
+        }
+    }
 
   require('lspconfig')['cssls'].setup { 
     capabilities = capabilities
   }
 
-  require('lspconfig')['djlsp'].setup {
+  require('lspconfig')['html'].setup { 
     capabilities = capabilities
   }
 
-  require('lspconfig')['html'].setup { 
+  require('lspconfig')['jdtls'].setup { 
     capabilities = capabilities
   }
 
